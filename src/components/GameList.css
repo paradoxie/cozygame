@@ -1,0 +1,32 @@
+/* 
+ * GameList.css - 解决虚拟列表的样式问题
+ */
+
+/* 允许虚拟列表的内容溢出并显示 */
+.virtual-grid-container .react-window-grid {
+  overflow: visible !important;
+  height: auto !important;
+}
+
+/* 修复网格容器高度计算 */
+.game-grid {
+  overflow: visible !important;
+  height: auto !important;
+}
+
+/* 确保网格项目有正确的间距 */
+.game-grid [role="row"] {
+  margin-bottom: 0 !important;
+}
+
+/* 确保滚动条不会出现在虚拟列表中 */
+.virtual-grid-container {
+  overflow: visible !important;
+}
+
+/* 移动端样式优化 */
+@media (max-width: 640px) {
+  .virtual-grid-container {
+    padding: 0 8px;
+  }
+} 

@@ -1,0 +1,1054 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+明白！兄弟，这次我保证不省略任何关键代码片段，让你能直接复制粘贴给 Cursor。V4.1 完整无缺版，请查收！
+
+---
+
+# 【小游戏站cozygame.fun快速开发方案】—— 带VIP视觉、不限制玩法 + Google登录云端同步收藏 (完整版 V4.1 - SEO强化 + 战略性多语言支持 - 无省略)
+
+---
+## 项目域名：cozygame.fun
+## 1. 项目背景
+
+*   聚合海外小游戏，通过 `iframe` 嵌入，方便快速迭代和上线。
+*   用户可收藏喜爱的游戏、自动记录并浏览最近玩过的游戏，提升用户粘性和留存。
+*   首页突出“VIP专区”视觉，营造VIP特权感，但VIP游戏**不限制免费访问**，利用“VIP漏洞”心理吸引用户。
+*   支持Google账号登录，实现收藏和最近玩过游戏记录的云端同步（Firebase Firestore），配合本地localStorage实现双缓存，优化体验。
+*   通过引导用户添加书签和桌面快捷方式（PWA支持），提升用户复访率。
+*   重视SEO基础建设，通过动态元数据、结构化数据、Sitemap等手段，提升搜索引擎友好度，争取自然流量。
+*   **支持战略性多语言切换**，根据市场潜力和用户规模，适配不同地区用户（需要支持'en',       // 英语
+  'zh-CN',    // 简体中文 (中国大陆)
+  'es',       // 西班牙语
+  'pt-BR',    // 巴西葡萄牙语
+  'fr',       // 法语
+  'de',       // 德语
+  'ru',       // 俄语
+  'ja',       // 日语
+  'ko',       // 韩语
+  'id'        // 印尼语），提升国际化体验和全球覆盖。
+
+---
+
+## 2. 需求功能清单
+
+| 功能点             | 说明                                                                 | 备注                                                                   | 优先级 |
+| ----------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---- |
+| **核心游戏功能**     |                                                                      |                                                                        |      |
+| 游戏数据结构        | JSON数组管理游戏信息。`id`(string, URL友好), `title`(object), `description`(object), `vip`(boolean), `iframeUrl`(string), `thumbnailUrl`(string), `tags`(object/array), `isRecommended`(boolean), `isHot`(boolean) | `title`, `description`, `tags` 支持多语言对象。                         | 高   |
+| 首页展示          | Logo、搜索框、VIP专区入口（醒目）、每日推荐轮播、热门游戏列表、收藏游戏区、最近玩过游戏区 | UI突出VIP专区，VIP游戏加皇冠图标。收藏/最近玩过无数据时友好提示或隐藏           | 高   |
+| 游戏详情页         | 游戏名、VIP标识、游戏简介、`iframe`嵌入游戏、收藏/取消收藏按钮、分享按钮（复制链接）、返回导航 | `iframe`全屏/适配，游戏加载时有`loading`状态，加载失败有提示                   | 高   |
+| 收藏功能          | 用户点击收藏按钮切换状态，数据存`localStorage`和云端Firestore (登录后)            | 需有状态同步机制，按钮有即时反馈                                           | 高   |
+| 最近玩过          | 访问游戏时自动记录游戏ID到列表（去重并保持最新在前），展示最近玩过列表                 | `localStorage`存储最多5条，登录后同步云端                                    | 高   |
+| VIP专区页面       | 展示所有`vip:true`的游戏合集，强调均可免费畅玩，带“充值”按钮（点击弹窗提示“开发中”）    | 营造“漏洞”感，引导用户探索                                                   | 高   |
+| **用户体验与留存**   |                                                                      |                                                                        |      |
+| 添加书签提示        | 首页和游戏页首次访问时，弹窗/轻提示用户收藏书签 (Ctrl+D/Cmd+D)                    | `localStorage`记录是否已提示                                                | 中   |
+| 桌面快捷方式 (PWA) | 移动端引导添加桌面快捷方式，提供PWA支持（`manifest.json`, `meta`标签, 图标, Service Worker基础缓存可选） | 提升移动端复访便利性                                                       | 中   |
+| 搜索功能          | 首页搜索框，支持按游戏标题、简介（当前语言）进行客户端模糊搜索                         | 简单高效，无需后端                                                          | 中   |
+| **用户账户与同步**   |                                                                      |                                                                        |      |
+| Google账号登录    | 用户点击登录按钮，通过Firebase Auth实现Google登录，登录后显示用户头像/名称             | 登录按钮在导航栏，登录过程有loading状态                                      | 高   |
+| 数据同步策略        | 登录后拉取云端数据，与本地数据合并（云端数据优先，列表类型合并去重保留顺序），更新双方数据    | 登出时清除本地云端同步标记，保留本地数据                                       | 高   |
+| **SEO优化**        |                                                                      |                                                                        |      |
+| 动态 `<title>` 和 `<meta description>` | 使用 `react-helmet-async` 为每个页面（首页、游戏详情、VIP区）根据当前语言生成独特、相关的元标签  | 关键SEO基础                                                             | 高   |
+| JSON-LD结构化数据   | 在游戏详情页为游戏信息生成 `VideoGame` Schema.org 结构化数据，字段使用当前语言内容，`inLanguage`指明。 | 帮助搜索引擎理解内容，可能获得富媒体摘要                                     | 高   |
+| `sitemap.xml` 生成   | 包含所有支持语言的页面URL变体，使用 `xhtml:link`。构建时生成或动态生成。              | 提交给搜索引擎，指引爬取                                                     | 高   |
+| `hreflang` 标签     | 在HTML `<head>` 中为每个页面添加 `link rel="alternate" hreflang="lang-code"` 标签及`x-default`。 | 关键的多语言SEO信号。`react-helmet-async` 实现。                        | 高   |
+| URL结构 (多语言)  | **路径前缀方案**: `yourdomain.com/en/game/game-id`, `yourdomain.com/zh-CN/game/game-id`。 | 路径前缀方案对SPA路由和SEO友好。                                      | 高   |
+| 语义化HTML与`alt`文本 | 全站使用语义化标签，所有图片（特别是游戏缩略图）提供描述性`alt`文本（支持多语言）。        | 提升可访问性和SEO                                                          | 高   |
+| **多语言 (i18n)**  |                                                                      |                                                                        |      |
+| i18n库集成        | 集成 `i18next` 配合 `react-i18next`, `i18next-http-backend`, `i18next-browser-languagedetector`。 | 管理翻译文本、切换语言。                                                  | 高   |
+| 语言文件          | 为每种支持的语言创建JSON格式的翻译文件 (e.g., `public/locales/en/translation.json`)。 | 包含UI文本、按钮文本、提示信息等。                                         | 高   |
+| 支持语言列表        | **推荐语言 (目标10种)**: `en`, `zh-CN`, `es`, `pt-BR`, `fr`, `de`, `ru`, `ja`, `ko`, `id`。 **初期上线 (至少3种)**: `en` (默认), `zh-CN`, `es`。 | 根据市场数据和资源分阶段实现。                                            | 高   |
+| 语言切换器        | 在UI上提供语言切换组件，允许用户手动选择当前支持的语言。                              | 通常放在Navbar或Footer。                                                 | 高   |
+| 默认语言检测        | 根据浏览器语言设置或 `localStorage` 偏好，自动设置初始语言，URL路径优先。             | 提升首次访问体验。                                                        | 高   |
+| 游戏内容翻译        | `games.json` 中游戏相关的 `title`, `description`, `tags` 需提供多语言版本（至少覆盖初期支持语言）。 | 数据源层面支持。                                                          | 高   |
+| **内容管理 (初期)** |                                                                      |                                                                        |      |
+| 游戏数据更新        | 初期手动更新`public/games.json`文件，重新部署或前端定时/启动时重新`fetch`（若托管在外部） | 简单易行，保证快速迭代                                                       | 高   |
+| 每日推荐/热门定义   | 初期在`games.json`中通过`isRecommended` / `isHot` (boolean)字段人工指定          | 满足快速上线需求                                                           | 中   |
+| **可选/后续**      |                                                                      |                                                                        |      |
+| 邮件订阅          | 首页底部简单邮箱输入框和提交按钮，点击提示“功能即将上线”或收集到简单后台             | 后续营销用，初期可只做UI                                                     | 低   |
+| 隐私政策/服务条款   | 简单页面或链接，说明数据收集和使用 (特别是Google登录相关)                       | 提升规范性                                                               | 低   |
+| RTL语言支持        | 若后续支持阿拉伯语、希伯来语等，需CSS适配 `dir="rtl"`。                           | 初期不考虑。                                                              | 低   |
+
+---
+
+## 3. 页面结构及组件说明 (多语言强化)
+
+### 整体调整:
+
+*   所有显示给用户的文本（按钮、标签、提示、页面标题、游戏信息等）都应通过i18n库的翻译函数获取，例如 `t('myKey')`。
+*   组件内部不再硬编码文本。
+
+### 3.1 首页 (HomePage.jsx)
+
+*   **`HelmetComponent.jsx` (自定义封装的Helmet组件或直接使用Helmet)**: 设置首页的 `<title>`, `<meta name="description">` (通过 `t()` 获取)。添加 `hreflang` 链接。
+*   **Navbar (`Navbar.jsx`)**: LOGO (`alt`文本用 `t('logo_alt')`), 搜索框 (`SearchInput.jsx` - placeholder用 `t('search_placeholder')`), VIP专区入口按钮 (文本用 `t('vip_zone_button')`), Google登录/用户信息区 (`AuthButton.jsx` - 内部文本用 `t()`)。 **新增语言切换器 (`LanguageSwitcher.jsx`)**。
+*   **VIP专区入口横幅/卡片 (`VipBanner.jsx`)**: 引导文案用 `t()`。
+*   **每日推荐轮播 (`GameCarousel.jsx`)**: 推荐游戏卡片 (`GameCard.jsx`)。
+*   **游戏列表区域 (`GameList.jsx`)**:
+    *   标题 (如“热门游戏”) 用 `t()`。
+    *   游戏卡片 (`GameCard.jsx`)。
+*   **我的区域**:
+    *   标题 (如“我的收藏”) 用 `t()`。
+    *   空状态提示 (如“暂无收藏”) 用 `t()`。
+*   **书签提示 (`BookmarkPrompt.jsx`)**: 提示文本用 `t()`。
+
+### 3.2 游戏详情页 (GameDetailPage.jsx)
+
+*   **`HelmetComponent.jsx`**:
+    *   动态设置 `<title>` (e.g., `t('game_detail_page_title', { gameTitle: translatedGameTitle, siteName: t('site_name') })`)。
+    *   动态设置 `<meta name="description">` (使用当前语言的游戏简介)。
+    *   注入 `VideoGame` 类型的 JSON-LD 结构化数据脚本 (name, description, keywords等使用当前语言内容, `inLanguage` 指明当前语言)。
+    *   添加 `hreflang` 链接 (包括 `x-default`)。
+*   **顶部导航/返回按钮**: 返回按钮文本用 `t('back_button')`。
+*   **游戏信息区**:
+    *   游戏名称 (`<h1>` 或 `<h2>`): 从 `game.title[currentLanguage]` 获取。
+    *   VIP标识 (若为VIP)。
+    *   游戏简介 (`<p>`): 从 `game.description[currentLanguage]` 获取。
+*   **游戏嵌入区 (`GamePlayer.jsx`)**:
+    *   `iframe` 嵌入游戏。
+    *   `loading` 指示器文本用 `t('loading_game')`。
+    *   加载失败提示用 `t('game_load_fail')`。
+*   **操作按钮区**:
+    *   收藏/取消收藏按钮 (`FavoriteButton.jsx` - 文本用 `t()`)。
+    *   分享链接按钮 (`ShareButton.jsx` - 提示文本用 `t()`)。
+*   **书签提示 (`BookmarkPrompt.jsx`)**: (同首页)。
+
+### 3.3 VIP专区页 (VipZonePage.jsx)
+
+*   **`HelmetComponent.jsx`**: 设置VIP专区的 `<title>`, `<meta name="description">` (通过 `t()` 获取)。添加 `hreflang` 链接。
+*   **页面标题/说明**: 文本用 `t()`。
+*   **VIP游戏列表 (`GameList.jsx`)**: 展示所有`vip:true`的游戏卡片。
+*   **说明文字**: 文本用 `t()`。
+*   **“充值”按钮**: 按钮文本用 `t('recharge_button')`，弹窗提示文本用 `t('recharge_popup_dev_notice')`。
+
+### 新增组件: `LanguageSwitcher.jsx`
+
+*   显示当前语言，并提供切换到其他**当前已支持**语言的选项 (如下拉菜单或一组按钮)。
+*   点击后调用i18n库的语言切换函数，并更新URL（通过 `navigate` 实现路径前缀方案）。
+*   语言名称显示本身也通过 `t('lang_code_full_name')` 获取，例如 `t('lang_en')` -> "English"。
+
+---
+
+## 4. 数据结构示例 (`public/games.json`)
+现阶段游戏库参考来源:https://www.onlinegames.io/media/plugins/genGames/embed.json
+
+```json
+{
+  "games": [
+    {
+      "id": "super-fun-racing",
+      "title": {
+        "en": "Super Fun Racing",
+        "zh-CN": "超级趣味赛车",
+        "es": "Carreras Súper Divertidas"
+      },
+      "description": {
+        "en": "Experience the thrill of Super Fun Racing, a fast-paced online game designed to test your driving skills and reflexes. Navigate challenging tracks, outsmart opponents, and race against the clock to become the ultimate champion. This free-to-play browser game offers hours of excitement for all racing enthusiasts. Are you ready to take the wheel?",
+        "zh-CN": "体验超级趣味赛车的快感，这是一款快节奏的在线游戏，旨在测试您的驾驶技巧和反应能力。穿越充满挑战的赛道，智胜对手，与时间赛跑，成为最终的冠军。这款免费任玩的浏览器游戏为所有赛车爱好者提供数小时的刺激体验。您准备好掌舵了吗？",
+        "es": "Experimenta la emoción de Carreras Súper Divertidas, un juego en línea de ritmo rápido diseñado para poner a prueba tus habilidades de conducción y reflejos. Navega por pistas desafiantes, supera a tus oponentes y corre contra el reloj para convertirte en el campeón definitivo. Este juego de navegador gratuito ofrece horas de emoción para todos los entusiastas de las carreras. ¿Estás listo para tomar el volante?"
+      },
+      "iframeUrl": "https://somegameprovider.com/superfunracing/index.html",
+      "thumbnailUrl": "/thumbnails/super_fun_racing.jpg",
+      "vip": false,
+      "isRecommended": true,
+      "isHot": true,
+      "tags": {
+        "en": ["racing", "action", "driving", "free to play", "skill"],
+        "zh-CN": ["赛车", "动作", "驾驶", "免费玩", "技巧"],
+        "es": ["carreras", "acción", "conducción", "jugar gratis", "habilidad"]
+      }
+    },
+    {
+      "id": "vip-space-adventure",
+      "title": {
+        "en": "VIP Space Adventure",
+        "zh-CN": "VIP太空探险",
+        "es": "Aventura Espacial VIP"
+      },
+      "description": {
+        "en": "An exclusive VIP space shooter adventure with hidden rewards and challenging bosses. Only for the best pilots! This VIP game, currently free to access, delivers a unique and challenging experience. Claim your VIP access now and conquer the galaxy!",
+        "zh-CN": "一款独特的VIP太空射击冒险游戏，包含隐藏奖励和富有挑战性的首领。专为最优秀的飞行员打造！这款VIP游戏目前可免费游玩，提供独特且富有挑战性的体验。立即领取您的VIP权限，征服银河系！",
+        "es": "Una aventura espacial VIP exclusiva de disparos con recompensas ocultas y jefes desafiantes. ¡Solo para los mejores pilotos! Este juego VIP, actualmente de acceso gratuito, ofrece una experiencia única y desafiante. ¡Reclama tu acceso VIP ahora y conquista la galaxia!"
+      },
+      "iframeUrl": "https://somegameprovider.com/vipspaceadventure/index.html",
+      "thumbnailUrl": "/thumbnails/vip_space_adventure.jpg",
+      "vip": true,
+      "isRecommended": false,
+      "isHot": true,
+      "tags": {
+        "en": ["shooter", "space", "vip exclusive", "sci-fi", "adventure", "boss fight"],
+        "zh-CN": ["射击", "太空", "VIP专属", "科幻", "冒险", "首领战"],
+        "es": ["disparos", "espacio", "exclusivo vip", "ciencia ficción", "aventura", "jefe de batalla"]
+      }
+    }
+  ]
+}
+```
+**UI翻译文件 (`public/locales/[lang]/translation.json`)**:
+`public/locales/en/translation.json`:
+```json
+{
+  "site_name": "GameOrbit",
+  "logo_alt": "GameOrbit Logo",
+  "search_placeholder": "Search games...",
+  "vip_zone_button": "VIP Zone",
+  "login_button": "Login with Google",
+  "logout_button": "Logout",
+  "favorites_title": "My Favorites",
+  "recently_played_title": "Recently Played",
+  "no_favorites_yet": "No favorite games yet. Explore and add some!",
+  "no_recently_played": "No recently played games. Start playing!",
+  "home_page_title": "Play Free Online Games, VIP Games - {{siteName}}",
+  "vip_zone_page_title": "VIP Games Zone - Exclusive Free Games | {{siteName}}",
+  "vip_zone_headline": "VIP Zone - All Premium Games Free to Play!",
+  "vip_zone_subheadline": "Enjoy our VIP collection. More exclusive features coming soon...",
+  "recharge_button": "Upgrade to VIP",
+  "recharge_popup_dev_notice": "VIP features are currently under development. Thank you for your interest!",
+  "game_detail_page_title": "Play {{gameTitle}} - {{siteName}}",
+  "game_thumbnail_alt": "Thumbnail for {{gameTitle}}",
+  "loading_game": "Loading game, please wait...",
+  "game_load_fail": "Oops! The game could not be loaded. Please try another one or refresh.",
+  "back_button": "Back",
+  "share_button_text": "Share",
+  "share_link_copied": "Game link copied to clipboard!",
+  "bookmark_prompt_title": "Bookmark Us!",
+  "bookmark_prompt_text_desktop": "Press Ctrl+D (or Cmd+D on Mac) to bookmark this site for easy access!",
+  "bookmark_prompt_text_mobile": "Add this site to your homescreen for a better experience!",
+  "bookmark_prompt_dismiss": "Got it!",
+  "play_button": "Play",
+  "favorite_button_add": "Favorite",
+  "favorite_button_remove": "Unfavorite",
+  "game_not_found": "Game not found!",
+  "lang_en": "English",
+  "lang_zh-CN": "简体中文",
+  "lang_es": "Español",
+  "footer_copyright": "© {{currentYear}} {{siteName}}. All rights reserved."
+}
+```
+(`public/locales/zh-CN/translation.json` 和 `public/locales/es/translation.json` 需对应翻译)
+
+---
+
+## 5. 关键功能实现说明与示例代码
+
+### 5.1 i18n库集成 (`src/i18n.js`)
+
+```javascript
+// src/i18n.js
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import HttpApi from 'i18next-http-backend';
+import LanguageDetector from 'i18next-browser-languagedetector';
+
+const recommendedLngs = ['en', 'zh-CN', 'es', 'pt-BR', 'fr', 'de', 'ru', 'ja', 'ko', 'id'];
+const initialSupportedLngs = ['en', 'zh-CN', 'es']; // 初期上线实际支持的语言
+const currentSupportedLngs = initialSupportedLngs;
+const defaultLng = 'en';
+
+i18n
+  .use(HttpApi) // 从 public/locales 加载翻译文件
+  .use(LanguageDetector) // 自动检测用户语言
+  .use(initReactI18next) // 将 i18n 实例传递给 react-i18next
+  .init({
+    supportedLngs: currentSupportedLngs,
+    fallbackLng: defaultLng, // 如果检测不到或当前语言无翻译，则使用的语言
+    debug: process.env.NODE_ENV === 'development', // 开发模式下开启debug
+    
+    detection: {
+      // 顺序: 路径 > localStorage > 浏览器设置
+      order: ['path', 'localStorage', 'navigator', 'htmlTag'],
+      caches: ['localStorage'], // 将检测到的语言缓存在localStorage
+      lookupFromPathIndex: 0, // 语言代码在路径的第一个位置 (e.g., /en/...)
+      // lookupQuerystring: 'lng', // 可作为URL查询参数备用 ?lng=es
+    },
+
+    backend: {
+      loadPath: '/locales/{{lng}}/translation.json', // 翻译文件路径
+    },
+
+    react: {
+      useSuspense: true, // 推荐，配合React Suspense在加载翻译时显示fallback UI
+    },
+    // interpolation: { // 如果需要在翻译字符串中转义HTML，可以配置
+    //   escapeValue: false, 
+    // }
+  });
+
+export { currentSupportedLngs, defaultLng, recommendedLngs };
+export default i18n;
+```
+
+### 5.1.1 `src/main.jsx` (集成 i18n 和 HelmetProvider)
+
+```jsx
+// src/main.jsx
+import React, { Suspense } from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import { HelmetProvider } from 'react-helmet-async';
+import './i18n'; // 初始化 i18n
+import './index.css'; // 假设有全局CSS
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <Suspense fallback={<div>Loading translations...</div>}> {/* Fallback UI for i18n loading */}
+      <HelmetProvider>
+        <App />
+      </HelmetProvider>
+    </Suspense>
+  </React.StrictMode>
+);
+```
+
+### 5.2 Firebase 初始化 (`src/services/firebase.js`)
+
+```javascript
+// src/services/firebase.js
+import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+
+// 从环境变量读取配置 (确保.env文件或部署环境已设置这些变量)
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
+
+// 导出 Firebase 服务和方法，方便在hooks中使用
+export { 
+  auth, 
+  db, 
+  googleProvider, 
+  signInWithPopup, 
+  signOut, 
+  onAuthStateChanged,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc
+};
+```
+**`firestore.rules`** (放在项目根目录)
+```firestore.rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      // 用户只能读写自己的数据
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    // 如果游戏列表未来考虑存 Firestore (当前方案是 games.json)
+    // match /games/{gameId} {
+    //   allow read: if true; // 所有人可读
+    //   allow write: if false; // 或者特定管理员角色
+    // }
+  }
+}
+```
+
+### 5.3 认证 Hook (`src/hooks/useAuth.js`)
+
+```javascript
+// src/hooks/useAuth.js
+import { useState, useEffect, useCallback } from 'react';
+import { 
+  auth, 
+  onAuthStateChanged as firebaseOnAuthStateChanged, 
+  signInWithPopup as firebaseSignInWithPopup, 
+  signOut as firebaseSignOut, 
+  googleProvider 
+} from '../services/firebase';
+
+export function useAuth() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = firebaseOnAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+      setError(null); // Clear previous errors on auth state change
+    }, (authError) => {
+      console.error("Auth state change error:", authError);
+      setError(authError);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const loginWithGoogle = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await firebaseSignInWithPopup(auth, googleProvider);
+      setUser(result.user);
+      // Login successful, user state will be updated by onAuthStateChanged
+    } catch (e) {
+      console.error("Google login error:", e);
+      setError(e);
+      // setUser(null); // Ensure user is null on error
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const logout = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await firebaseSignOut(auth);
+      // setUser(null); // User state will be updated by onAuthStateChanged
+    } catch (e) {
+      console.error("Sign out error:", e);
+      setError(e);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { user, loading, error, loginWithGoogle, logout };
+}
+```
+
+### 5.4 游戏数据 Hook (`src/hooks/useGameData.js`)
+
+```javascript
+// src/hooks/useGameData.js
+import { useState, useEffect } from 'react';
+
+export function useGameData() {
+  const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch('/games.json'); // games.json 在 public 目录
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data && Array.isArray(data.games)) {
+          setGames(data.games);
+        } else {
+          throw new Error("Invalid games data format");
+        }
+      } catch (e) {
+        console.error("Failed to fetch games:", e);
+        setError(e.message);
+        setGames([]); // Clear games on error
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGames();
+  }, []); // Empty dependency array means this effect runs once on mount
+
+  // Function to get a single game by ID (optional, can be done in component)
+  const getGameById = (id) => games.find(game => game.id === id);
+
+  return { games, loading, error, getGameById };
+}
+```
+
+### 5.5 用户偏好 Hook (收藏与最近玩过) (`src/hooks/useUserPreferences.js`)
+
+```javascript
+// src/hooks/useUserPreferences.js
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from './useAuth';
+import { db, doc, getDoc, setDoc, updateDoc } from '../services/firebase'; // Firebase db instance and methods
+
+const MAX_RECENTLY_PLAYED = 5;
+
+export function useUserPreferences() {
+  const { user } = useAuth();
+
+  // Initialize from localStorage
+  const [favorites, setFavorites] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('favorites') || '{}'); }
+    catch { return {}; }
+  });
+  const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('recentlyPlayed') || '[]'); }
+    catch { return []; }
+  });
+  const [isSynced, setIsSynced] = useState(false); // Track if initial sync from Firestore happened
+
+  // Sync from Firestore on user login
+  useEffect(() => {
+    if (user && db && !isSynced) { // Only sync if user is logged in and not synced yet
+      const syncFromFirestore = async () => {
+        const userRef = doc(db, 'users', user.uid);
+        try {
+          const snap = await getDoc(userRef);
+          if (snap.exists()) {
+            const cloudData = snap.data();
+            
+            const localFav = JSON.parse(localStorage.getItem('favorites') || '{}');
+            const cloudFav = cloudData.favorites || {};
+            const mergedFavorites = { ...localFav, ...cloudFav }; // Cloud data takes precedence for existing keys
+            setFavorites(mergedFavorites);
+            localStorage.setItem('favorites', JSON.stringify(mergedFavorites));
+
+            const localRecent = JSON.parse(localStorage.getItem('recentlyPlayed') || '[]');
+            const cloudRecent = cloudData.recentlyPlayed || [];
+            let mergedRecently = Array.from(new Set([...cloudRecent, ...localRecent])); // Cloud items first, then local, unique
+            if (mergedRecently.length > MAX_RECENTLY_PLAYED) {
+              mergedRecently = mergedRecently.slice(0, MAX_RECENTLY_PLAYED);
+            }
+            setRecentlyPlayed(mergedRecently);
+            localStorage.setItem('recentlyPlayed', JSON.stringify(mergedRecently));
+            
+            // Optionally, write merged data back to ensure consistency, or only if different
+            // await updateDoc(userRef, { favorites: mergedFavorites, recentlyPlayed: mergedRecently });
+          } else {
+            // No data in Firestore, upload local data
+            await setDoc(userRef, { 
+              favorites: JSON.parse(localStorage.getItem('favorites') || '{}'), 
+              recentlyPlayed: JSON.parse(localStorage.getItem('recentlyPlayed') || '[]') 
+            });
+          }
+          setIsSynced(true); // Mark as synced
+        } catch (error) {
+          console.error("Error syncing data from Firestore:", error);
+        }
+      };
+      syncFromFirestore();
+    } else if (!user) {
+      setIsSynced(false); // Reset sync status on logout
+    }
+  }, [user, db, isSynced]);
+
+  // Sync a specific data type to Firestore
+  const syncToFirestore = useCallback(async (dataType, data) => {
+    if (user && db) {
+      const userRef = doc(db, 'users', user.uid);
+      try {
+        await updateDoc(userRef, { [dataType]: data });
+      } catch (error) {
+        // If doc doesn't exist (e.g., new user, first action before initial sync completes)
+        if (error.code === 'not-found') {
+          try {
+            await setDoc(userRef, { [dataType]: data });
+          } catch (setErr) {
+            console.error(`Error setting ${dataType} to Firestore after not-found:`, setErr);
+          }
+        } else {
+          console.error(`Error syncing ${dataType} to Firestore:`, error);
+        }
+      }
+    }
+  }, [user, db]);
+
+  const toggleFavorite = useCallback((gameId) => {
+    setFavorites(prev => {
+      const updated = { ...prev };
+      if (updated[gameId]) {
+        delete updated[gameId];
+      } else {
+        updated[gameId] = true; // Or store a timestamp: new Date().toISOString()
+      }
+      localStorage.setItem('favorites', JSON.stringify(updated));
+      if (user) syncToFirestore('favorites', updated); // Sync if user is logged in
+      return updated;
+    });
+  }, [user, syncToFirestore]);
+
+  const addRecentlyPlayed = useCallback((gameId) => {
+    setRecentlyPlayed(prev => {
+      let updated = [gameId, ...prev.filter(id => id !== gameId)];
+      if (updated.length > MAX_RECENTLY_PLAYED) {
+        updated = updated.slice(0, MAX_RECENTLY_PLAYED);
+      }
+      localStorage.setItem('recentlyPlayed', JSON.stringify(updated));
+      if (user) syncToFirestore('recentlyPlayed', updated); // Sync if user is logged in
+      return updated;
+    });
+  }, [user, syncToFirestore]);
+
+  return { favorites, recentlyPlayed, toggleFavorite, addRecentlyPlayed, isSyncedWithFirestore: isSynced };
+}
+```
+
+### 5.6 语言切换器 (`src/components/LanguageSwitcher.jsx`)
+
+```jsx
+// src/components/LanguageSwitcher.jsx
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { currentSupportedLngs, defaultLng } from '../i18n'; // Import from i18n config
+
+const LanguageSwitcher = () => {
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const changeLanguage = (lng) => {
+    const currentPath = location.pathname;
+    const currentLangInPath = currentSupportedLngs.find(supportedLang => currentPath.startsWith(`/${supportedLang}`));
+
+    let newPath;
+    if (currentLangInPath) {
+      // Replace current language prefix with new one
+      newPath = `/${lng}${currentPath.substring(currentLangInPath.length + 1)}`;
+    } else {
+      // No language prefix (e.g. root path redirected to default, or some error)
+      // Prepend new language prefix, assuming currentPath is the base path after language
+      // This case needs careful handling based on your exact routing for root/default lang
+      newPath = `/${lng}${currentPath === '/' ? '' : currentPath}`;
+    }
+    
+    // Special case for root: if currentPath is just '/', newPath should be /lng
+    if (location.pathname === `/${currentLangInPath}` && newPath === `/${lng}/`) {
+        newPath = `/${lng}`;
+    }
+
+
+    // i18n.changeLanguage(lng); // This will be handled by LanguageDetector due to URL change
+    navigate(newPath); 
+  };
+
+  return (
+    <div className="language-switcher">
+      {currentSupportedLngs.map((lng) => (
+        <button
+          key={lng}
+          className={`lang-button ${i18n.resolvedLanguage === lng ? 'active' : ''}`}
+          type="button"
+          onClick={() => changeLanguage(lng)}
+          disabled={i18n.resolvedLanguage === lng}
+          aria-label={t(`select_language_${lng}`, {defaultValue: `Select ${lng}`})} // For accessibility
+        >
+          {t(`lang_${lng}`)} {/* e.g., lang_en: "English" from translation.json */}
+        </button>
+      ))}
+    </div>
+  );
+};
+// Add to translation.json: "select_language_en": "Select English" etc.
+export default LanguageSwitcher;
+```
+
+### 5.7 多语言路由和布局 (`src/App.jsx` and `src/components/Layout.jsx`)
+
+```jsx
+// src/components/Layout.jsx
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Navbar from './Navbar'; // Assuming Navbar.jsx exists
+import Footer from './Footer'; // Assuming Footer.jsx exists
+
+const Layout = () => {
+  return (
+    <div className="app-container">
+      <Navbar />
+      <main className="main-content">
+        <Outlet /> {/* Nested routes will render here */}
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default Layout;
+```
+
+```jsx
+// src/App.jsx
+import React, { useLayoutEffect } from 'react';
+import { BrowserRouter, Routes, Route, useParams, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { currentSupportedLngs, defaultLng } from './i18n';
+
+// Pages
+import HomePage from './pages/HomePage';
+import GameDetailPage from './pages/GameDetailPage';
+import VipZonePage from './pages/VipZonePage';
+import NotFoundPage from './pages/NotFoundPage'; // Create a 404 page
+
+// Layout Component
+import Layout from './components/Layout';
+
+const LanguageAwareRedirect = () => {
+  // This component is a helper to ensure path retains query params and hash on redirect
+  const location = useLocation();
+  return <Navigate to={`/${defaultLng}${location.pathname === '/' ? '' : location.pathname}${location.search}${location.hash}`} replace />;
+};
+
+
+const LanguageRouteHandler = ({ children }) => {
+  const { lang } = useParams();
+  const { i18n } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useLayoutEffect(() => {
+    const targetLang = lang || defaultLng;
+
+    if (currentSupportedLngs.includes(targetLang)) {
+      if (i18n.resolvedLanguage !== targetLang) {
+        i18n.changeLanguage(targetLang);
+      }
+      // If accessing root (e.g. site.com/) and lang param is missing, redirect to /en (or defaultLng)
+      if (!lang && targetLang === defaultLng && location.pathname === '/') {
+         navigate(`/${defaultLng}${location.search}${location.hash}`, { replace: true });
+      }
+    } else {
+      // Invalid lang in path, redirect to default language with the rest of the path
+      const pathWithoutInvalidLang = lang ? location.pathname.substring(lang.length + 1) : location.pathname;
+      const newPath = `/${defaultLng}${pathWithoutInvalidLang === '/' ? '' : pathWithoutInvalidLang}${location.search}${location.hash}`;
+      navigate(newPath, { replace: true });
+    }
+  }, [lang, i18n, navigate, location]);
+
+  // Render children (which will be the <Layout> component) once language is handled
+  return children; 
+};
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Route that captures the language parameter */}
+        <Route path="/:lang" element={<LanguageRouteHandler><Layout /></LanguageRouteHandler>}>
+          {/* Routes nested under Layout and language prefix */}
+          <Route index element={<HomePage />} /> {/* e.g., /en */}
+          <Route path="game/:gameId" element={<GameDetailPage />} /> {/* e.g., /en/game/some-game */}
+          <Route path="vip-zone" element={<VipZonePage />} /> {/* e.g., /en/vip-zone */}
+          {/* Add more routes here as needed */}
+          <Route path="*" element={<NotFoundPage />} /> {/* Lang-specific 404 */}
+        </Route>
+        
+        {/* Fallback for root path or paths without a language prefix */}
+        {/* This will redirect 'site.com/' to 'site.com/en/' (or defaultLng) */}
+        {/* And 'site.com/some/path' to 'site.com/en/some/path' */}
+        <Route path="/*" element={<LanguageAwareRedirect />} />
+        
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+```
+(You'll need to create `HomePage.jsx`, `GameDetailPage.jsx`, `VipZonePage.jsx`, `NotFoundPage.jsx`, `Navbar.jsx`, `Footer.jsx` and other components mentioned. Their internal logic will use `useTranslation`, `useGameData`, `useUserPreferences` etc. as needed.)
+
+### 5.8 `sitemap.xml` Generation Script (`scripts/generate-sitemap.js`)
+
+```javascript
+// scripts/generate-sitemap.js
+const fs = require('fs');
+const path = require('path');
+const { SitemapStream, streamToPromise } = require('sitemap');
+const { Readable } = require('stream');
+
+// Manually import i18n config to get supported languages
+// This is a simplified way; in a real setup, you might have a shared config
+const currentSupportedLngs = ['en', 'zh-CN', 'es']; // Keep this in sync with src/i18n.js
+const defaultLng = 'en';
+
+const YOUR_DOMAIN = 'https://yourdomain.com'; // Replace with your actual domain
+
+async function generateSitemap() {
+  let gamesData;
+  try {
+    const gamesJsonPath = path.resolve(__dirname, '../public/games.json');
+    gamesData = JSON.parse(fs.readFileSync(gamesJsonPath, 'utf8'));
+  } catch (error) {
+    console.error("Failed to read or parse games.json:", error);
+    return;
+  }
+
+  const links = [];
+
+  // Add static pages for each language
+  const staticPages = ['', 'vip-zone']; // Relative paths from language root, '' means homepage for that lang
+  
+  currentSupportedLngs.forEach(lang => {
+    staticPages.forEach(pagePath => {
+      const url = `/${lang}${pagePath ? `/${pagePath}` : ''}`;
+      const xhtmlLinks = currentSupportedLngs.map(lng => ({
+        rel: 'alternate',
+        hreflang: lng,
+        href: `${YOUR_DOMAIN}/${lng}${pagePath ? `/${pagePath}` : ''}`,
+      }));
+      xhtmlLinks.push({
+        rel: 'alternate',
+        hreflang: 'x-default',
+        href: `${YOUR_DOMAIN}/${defaultLng}${pagePath ? `/${pagePath}` : ''}`,
+      });
+
+      links.push({
+        url: url,
+        changefreq: pagePath === '' ? 'daily' : 'weekly',
+        priority: pagePath === '' ? 1.0 : 0.8,
+        xhtmlLinks: xhtmlLinks,
+      });
+    });
+  });
+
+
+  // Add game detail pages for each language
+  if (gamesData && gamesData.games) {
+    gamesData.games.forEach(game => {
+      currentSupportedLngs.forEach(lang => {
+        const gameUrlSegment = `/game/${game.id}`;
+        const url = `/${lang}${gameUrlSegment}`;
+        
+        const xhtmlLinks = currentSupportedLngs.map(lng => ({
+          rel: 'alternate',
+          hreflang: lng,
+          href: `${YOUR_DOMAIN}/${lng}${gameUrlSegment}`,
+        }));
+        xhtmlLinks.push({
+          rel: 'alternate',
+          hreflang: 'x-default',
+          href: `${YOUR_DOMAIN}/${defaultLng}${gameUrlSegment}`,
+        });
+        
+        const imgEntry = game.thumbnailUrl ? [{
+            url: `${YOUR_DOMAIN}${game.thumbnailUrl}`, // Assuming thumbnailUrl is absolute or root-relative
+            title: game.title[lang] || game.title[defaultLng] || game.title['en'],
+            // caption: game.description[lang] || game.description[defaultLng] || game.description['en'], // Optional
+        }] : undefined;
+
+        links.push({
+          url: url,
+          changefreq: 'monthly',
+          priority: 0.7,
+          xhtmlLinks: xhtmlLinks,
+          img: imgEntry, // Add image sitemap entry if thumbnail exists
+        });
+      });
+    });
+  } else {
+    console.warn("gamesData.games is not defined or empty. No game pages added to sitemap.");
+  }
+
+  const stream = new SitemapStream({ hostname: YOUR_DOMAIN });
+  try {
+    const xml = await streamToPromise(Readable.from(links).pipe(stream)).then((data) =>
+      data.toString()
+    );
+    const sitemapPath = path.resolve(__dirname, '../public/sitemap.xml');
+    fs.writeFileSync(sitemapPath, xml);
+    console.log(`Sitemap generated successfully at ${sitemapPath}! Contains ${links.length} URLs.`);
+  } catch (error) {
+    console.error("Error generating sitemap:", error);
+  }
+}
+
+generateSitemap();
+```
+**Add to `package.json` scripts:**
+`"generate-sitemap": "node scripts/generate-sitemap.js"`
+And run it as part of your build process: `"build": "npm run generate-sitemap && vite build"` (or your build tool).
+
+### 5.9 PWA (`public/manifest.json` and `index.html` additions)
+
+**`public/manifest.json`**:
+```json
+{
+  "short_name": "GameOrbit",
+  "name": "GameOrbit - Play Free Online Games",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "type": "image/png",
+      "sizes": "72x72"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "type": "image/png",
+      "sizes": "152x152"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "type": "image/png",
+      "sizes": "384x384"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/", 
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#1A202C", 
+  "background_color": "#FFFFFF",
+  "description": "Discover and play a wide variety of free online games. VIP games also available for everyone!"
+}
+```
+(Ensure you have icons in `public/icons/` directory for the sizes specified)
+
+**`public/index.html` `<head>` additions**:
+```html
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" /> <!-- Or your favicon -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#1A202C" /> <!-- Match manifest.json theme_color -->
+    
+    <!-- Apple PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /> <!-- Or 'default', 'black' -->
+    <meta name="apple-mobile-web-app-title" content="GameOrbit" />
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" /> 
+    <!-- You can add more apple-touch-icon sizes if needed -->
+
+    <!-- Other standard meta tags like description will be handled by Helmet per page -->
+    <!-- <title>GameOrbit</title> This will be overridden by Helmet -->
+```
+
+---
+
+## 6. UI设计要点与交互建议 (多语言)
+
+*   **语言切换器位置**: Navbar右上角或Footer是常见位置，要易于发现。
+*   **语言显示**: 使用 `t('lang_code_full_name')` 从翻译文件获取语言全称。
+*   **持久化**: 用户选择的语言应保存在 `localStorage` 中，下次访问时自动应用。`i18next-browser-languagedetector` 已配置支持此功能，路径优先。
+*   **RTL支持**: (初期不考虑)。
+*   **Loading/Error States**: UI应清晰显示加载状态（骨架屏、spinners）和错误信息（友好提示，使用 `t()`翻译）。
+*   **Responsive Design**: 所有页面和组件在桌面、平板、移动设备上均有良好体验。
+
+---
+
+## 7. 目录结构建议
+
+```
+/public
+  /locales        
+    /en/translation.json
+    /es/translation.json
+    /zh-CN/translation.json
+  /games.json     
+  /thumbnails/ (示例: super_fun_racing.jpg)
+  /icons/ (PWA图标: icon-72x72.png, ..., icon-512x512.png)
+  manifest.json
+  robots.txt
+  sitemap.xml (构建时生成)
+  vite.svg (或你的favicon)
+  index.html
+/scripts
+  generate-sitemap.js 
+/src
+  /assets
+    /images/ (logo.png, crown-icon.svg, etc.)
+    /styles/ (index.css, tailwind.config.js if using Tailwind)
+  /components
+    /AuthButton.jsx
+    /BookmarkPrompt.jsx
+    /FavoriteButton.jsx
+    /Footer.jsx
+    /GameCard.jsx
+    /GameCarousel.jsx
+    /GameList.jsx
+    /GamePlayer.jsx
+    /LanguageSwitcher.jsx
+    /Layout.jsx
+    /LoadingSpinner.jsx
+    /Navbar.jsx
+    /SearchInput.jsx
+    /ShareButton.jsx
+    /VipBanner.jsx
+    /common/ (Modal.jsx, Button.jsx, Icon.jsx etc. reusable UI elements)
+  /hooks
+    /useAuth.js
+    /useGameData.js
+    /useLocalStorage.js (Generic hook if needed, or incorporated into others)
+    /useUserPreferences.js
+    /usePageVisibility.js (Optional, for pausing game/effects when tab not visible)
+  /pages
+    /GameDetailPage.jsx
+    /HomePage.jsx
+    /NotFoundPage.jsx
+    /VipZonePage.jsx
+    // /PrivacyPolicyPage.jsx (Optional)
+    // /TermsOfServicePage.jsx (Optional)
+  /services
+    /firebase.js
+  /utils (可选, 辅助函数，如 debounce, formatDate, etc.)
+    /helpers.js 
+  App.jsx     
+  i18n.js    
+  main.jsx    
+.env.example (VITE_FIREBASE_API_KEY=... etc.)
+.env          (Actual environment variables)
+.gitignore
+firestore.rules
+package.json
+README.md
+vite.config.js (or your bundler config)
+```
+
+---
+
+## 8. 产品上线建议 (1-2天快速迭代 - 战略性多语言)
+
+*   **Day 0 (准备)**:
+    *   项目框架搭建 (Vite + React)。
+    *   Firebase项目配置, `.env` 文件设置。
+    *   基础 `firestore.rules`。
+    *   `games.json` 初期数据 (至少2-3个游戏, 1-2种语言内容)。
+    *   PWA图标, Logo等素材准备。
+    *   `i18n.js` 配置, `public/locales` 结构, `initialSupportedLngs` 翻译文件 (`translation.json`) 骨架。
+
+*   **Day 1 (核心功能 + 基础i18n)**:
+    *   **上午**: `useAuth`, `useGameData`, `useUserPreferences` hooks。Firebase登录功能。首页 (`HomePage`) 布局, `GameList`, `GameCard` (单语言内容展示)。
+    *   **下午**: `GameDetailPage` 布局, `iframe` 嵌入。本地收藏/最近玩过。`i18next` 集成, `useTranslation` 应用到 Navbar, `LanguageSwitcher` 基础版。
+    *   **晚上**: `VIPZonePage`。多语言路由 (`App.jsx`) 框架。`Helmet` 集成基础 `title`/`description` (单语言)。
+
+*   **Day 2 (完善i18n, SEO, 核心组件)**:
+    *   **上午**: 完善 `initialSupportedLngs` 的UI翻译 (`translation.json`)。`games.json` 游戏内容翻译 (title, desc, tags) 覆盖 `initialSupportedLngs`。
+    *   **下午**: `Helmet` 动态元数据 (`title`, `description`, JSON-LD, `hreflang`) 在 `GameDetailPage` 等页面实现多语言。`LanguageSwitcher` 功能完善。
+    *   **晚上**: `sitemap.xml` 生成脚本。`robots.txt`。PWA `manifest.json`。全面测试语言切换、路由、SEO元数据、收藏同步。
+
+*   **Day 3 (测试、部署与迭代)**:
+    *   Bug修复，UI细节打磨，响应式测试。
+    *   部署到 Vercel/Netlify 等平台。
+    *   Google Search Console 提交 sitemap。
+    *   根据反馈和数据，规划下一批支持的语言和功能。
+
