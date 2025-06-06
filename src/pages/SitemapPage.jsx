@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import StaticPageLayout from '../components/StaticPageLayout';
 import SitemapIcon from '../assets/icons/sitemap-icon.svg';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
+import { currentSupportedLngs } from '../i18n';
 
 const SitemapPage = () => {
   const { t, i18n } = useTranslation();
