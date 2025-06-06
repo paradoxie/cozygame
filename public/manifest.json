@@ -1,53 +1,69 @@
 {
   "short_name": "CozyGame",
-  "name": "CozyGame - 免费在线游戏",
+  "name": "CozyGame.fun - 温馨游戏",
   "icons": [
     {
-      "src": "/icons/logo.png",
+      "src": "/icons/icon-72x72.png",
       "type": "image/png",
       "sizes": "72x72"
     },
     {
-      "src": "/icons/logo.png",
+      "src": "/icons/icon-96x96.png",
       "type": "image/png",
       "sizes": "96x96"
     },
     {
-      "src": "/icons/logo.png",
+      "src": "/icons/icon-128x128.png",
       "type": "image/png",
       "sizes": "128x128"
     },
     {
-      "src": "/icons/logo.png",
+      "src": "/icons/icon-144x144.png",
       "type": "image/png",
       "sizes": "144x144"
     },
     {
-      "src": "/icons/logo.png",
+      "src": "/icons/icon-152x152.png",
       "type": "image/png",
       "sizes": "152x152"
     },
     {
-      "src": "/icons/logo.png",
+      "src": "/icons/icon-192x192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/logo.png",
+      "src": "/icons/icon-384x384.png",
       "type": "image/png",
       "sizes": "384x384"
     },
     {
-      "src": "/icons/logo.png",
+      "src": "/icons/icon-512x512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
-  "start_url": "/", 
+  "start_url": "/",
   "display": "standalone",
   "scope": "/",
-  "theme_color": "#3B82F6", 
+  "theme_color": "#3B82F6",
   "background_color": "#FFFFFF",
-  "description": "探索各种免费在线游戏，VIP游戏对所有人开放！"
+  "description": "CozyGame.fun 提供各种温馨、治愈的在线游戏，让您在忙碌的生活中找到放松的时刻。",
+  "orientation": "any",
+  "categories": ["games", "entertainment"],
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    },
+    {
+      "src": "/screenshots/game.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
+  "lang": "zh-CN",
+  "dir": "ltr"
 } 

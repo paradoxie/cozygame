@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 渐变背景 -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.1"/>
+      <stop offset="50%" stop-color="#EC4899" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.1"/>
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="50%" stop-color="#EC4899"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <filter id="glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="1200" height="630" fill="white"/>
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- 装饰元素 -->
+  <circle cx="200" cy="150" r="100" fill="#F59E0B" fill-opacity="0.1"/>
+  <circle cx="1000" cy="500" r="150" fill="#3B82F6" fill-opacity="0.1"/>
+  <circle cx="600" cy="100" r="50" fill="#EC4899" fill-opacity="0.1"/>
+  <circle cx="900" cy="200" r="70" fill="#8B5CF6" fill-opacity="0.1"/>
+  <circle cx="300" cy="450" r="120" fill="#10B981" fill-opacity="0.1"/>
+  
+  <!-- 网站名称 -->
+  <g filter="url(#glow)">
+    <text x="600" y="300" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="url(#textGradient)" text-anchor="middle">CozyGame.fun</text>
+  </g>
+  
+  <!-- 标语 -->
+  <text x="600" y="370" font-family="Arial, sans-serif" font-size="32" fill="#4B5563" text-anchor="middle">温馨游戏 · 轻松享受</text>
+  
+  <!-- 装饰图案 - 游戏手柄 -->
+  <g transform="translate(500, 450) scale(1.5)">
+    <path d="M60 20H40C29 20 20 29 20 40V60C20 71 29 80 40 80H60C71 80 80 71 80 60V40C80 29 71 20 60 20Z" stroke="#4B5563" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M35 50H45" stroke="#4B5563" stroke-width="3" stroke-linecap="round"/>
+    <path d="M40 45V55" stroke="#4B5563" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="60" cy="45" r="3" fill="#4B5563"/>
+    <circle cx="65" cy="55" r="3" fill="#4B5563"/>
+  </g>
+  
+  <!-- 底部URL -->
+  <text x="600" y="550" font-family="Arial, sans-serif" font-size="24" fill="#4B5563" text-anchor="middle">https://cozygame.fun</text>
+</svg> 

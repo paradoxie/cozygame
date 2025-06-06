@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,6 +10,16 @@ import AdvancedTagFilter from '../components/AdvancedTagFilter';
 import BookmarkPrompt from '../components/BookmarkPrompt';
 import DebugInfo from '../components/DebugInfo';
 import CrownIcon from '../assets/icons/crown.svg';
+
+// 随机打乱数组的辅助函数
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
 
 const HomePage = () => {
   const { t, i18n } = useTranslation();
@@ -40,14 +50,27 @@ const HomePage = () => {
     }
   }, []);
   
-  // 筛选推荐游戏 (使用allGames确保始终获取所有推荐游戏)
-  const recommendedGames = allGames.filter(game => game.isRecommended).slice(0, 10);
+  // 随机筛选推荐游戏 (使用allGames确保始终获取所有推荐游戏)
+  const recommendedGames = useMemo(() => {
+    const recommended = allGames.filter(game => game.isRecommended);
+    return shuffleArray(recommended).slice(0, 10);
+  }, [allGames]);
   
   // 筛选VIP游戏
-  const vipGames = allGames.filter(game => game.vip).slice(0, 6);
+  const vipGames = useMemo(() => {
+    const vip = allGames.filter(game => game.vip);
+    return shuffleArray(vip).slice(0, 6);
+  }, [allGames]);
   
-  // 在首页只显示前N个游戏
-  const displayedGames = games.slice(0, displayCount);
+  // 在首页只显示随机的前N个游戏
+  const displayedGames = useMemo(() => {
+    // 如果正在加载更多或初始加载，保持当前顺序
+    if (loading || initialLoading) return games.slice(0, displayCount);
+    
+    // 否则随机排序
+    const hotGames = shuffleArray(games);
+    return hotGames.slice(0, displayCount);
+  }, [games, displayCount, loading, initialLoading]);
   
   // 当标签或过滤逻辑改变时，使用Web Worker过滤游戏
   useEffect(() => {
@@ -188,7 +211,7 @@ const HomePage = () => {
                   setDisplayCount(prevCount => prevCount + 20);
                 }}
                 disabled={loading || !hasMore}
-                className="btn btn-primary px-8"
+                className="btn bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 hover:shadow-md hover:shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <span className="flex items-center">

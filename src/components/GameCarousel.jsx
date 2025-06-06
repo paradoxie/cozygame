@@ -46,8 +46,11 @@ const GameCarousel = ({ games }) => {
             <p className="text-neutral-lightest mb-3 line-clamp-2 text-sm md:text-base">{description}</p>
             <Link 
               to={`/${currentLang}/game/${currentGame.id}`}
-              className="btn btn-primary btn-sm"
+              className="btn-play flex items-center gap-2 text-sm py-2 px-5 shadow-md"
             >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+              </svg>
               {t('play_button')}
             </Link>
           </div>

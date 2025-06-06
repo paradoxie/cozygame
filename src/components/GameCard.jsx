@@ -150,10 +150,14 @@ const GameCard = ({ game, showTitle = true }) => {
           
           {/* 卡片底部操作按钮 */}
           <div className="mt-auto pt-3 flex justify-between items-center">
-            <Link 
+            <Link
               to={`/${currentLang}/game/${game.id}`}
-              className="game-btn bg-primary-blue text-white text-xs px-3 py-1.5 rounded-full hover:bg-primary-blue-dark button-flash relative z-20"
+              className="btn-play flex items-center justify-center gap-1 text-xs py-1.5 px-3 shadow-sm"
+              aria-label={`${t('play_button')} ${title}`}
             >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+              </svg>
               {t('play_button')}
             </Link>
             

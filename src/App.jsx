@@ -16,6 +16,8 @@ import ContactPage from './pages/ContactPage';
 import PrivacyPage from './pages/PrivacyPage';
 import DisclaimerPage from './pages/DisclaimerPage';
 import TermsPage from './pages/TermsPage';
+import CookiePolicyPage from './pages/CookiePolicyPage';
+import SitemapPage from './pages/SitemapPage';
 
 // Layout Components
 import Layout from './components/Layout';
@@ -80,12 +82,16 @@ function App() {
           <Route path="vip-zone" element={<VipZonePage />} /> {/* 例如，/en/vip-zone */}
           <Route path="all-games" element={<AllGamesPage />} /> {/* 例如，/en/all-games */}
           
-          {/* 新增常规页面路由 */}
+          {/* 常规页面路由 */}
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />
+          
+          {/* 法律页面路由 */}
           <Route path="privacy" element={<PrivacyPage />} />
           <Route path="disclaimer" element={<DisclaimerPage />} />
           <Route path="terms" element={<TermsPage />} />
+          <Route path="cookie-policy" element={<CookiePolicyPage />} />
+          <Route path="sitemap" element={<SitemapPage />} />
           
           <Route path="*" element={<NotFoundPage />} /> {/* 特定语言的404 */}
         </Route>

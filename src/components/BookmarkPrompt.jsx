@@ -29,19 +29,23 @@ const BookmarkPrompt = () => {
   if (!showPrompt) return null;
   
   return (
-    <div className="fixed bottom-4 right-4 max-w-xs bg-white dark:bg-neutral-dark rounded-lg shadow-lg p-4 z-40 animate-slide-up">
-      <div className="flex items-start">
-        <div className="flex-shrink-0 text-primary-blue mr-3">
-          <img src={BookmarkIcon} className="w-6 h-6" alt="Bookmark" />
+    <div className="fixed bottom-4 right-4 max-w-xs bg-gradient-to-br from-purple-600/90 to-indigo-600/90 backdrop-blur-md text-white rounded-xl shadow-lg p-4 z-40 animate-slide-up border border-white/20">
+      {/* 装饰性元素 */}
+      <div className="absolute -right-4 -top-4 w-16 h-16 bg-accent-yellow/20 rounded-full blur-xl"></div>
+      <div className="absolute -left-4 -bottom-4 w-16 h-16 bg-primary-blue/20 rounded-full blur-xl"></div>
+      
+      <div className="relative z-10 flex items-start">
+        <div className="flex-shrink-0 text-white mr-3 bg-white/20 p-2 rounded-full">
+          <img src={BookmarkIcon} className="w-5 h-5" alt="Bookmark" />
         </div>
         <div>
-          <h3 className="font-semibold mb-1">{t('bookmark_prompt_title')}</h3>
-          <p className="text-sm text-neutral-medium mb-3">
+          <h3 className="font-semibold mb-1 text-white/90">{t('bookmark_prompt_title')}</h3>
+          <p className="text-sm text-white/80 mb-3">
             {isMobile ? t('bookmark_prompt_text_mobile') : t('bookmark_prompt_text_desktop')}
           </p>
           <button 
             onClick={dismissPrompt}
-            className="btn btn-primary text-sm py-1 px-3"
+            className="bg-white/20 hover:bg-white/30 text-white text-sm py-1.5 px-4 rounded-full transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95"
           >
             {t('bookmark_prompt_dismiss')}
           </button>

@@ -51,8 +51,12 @@ const VipZonePage = () => {
           <p className="mb-6 opacity-90">{t('vip_zone_subheadline')}</p>
           <button
             onClick={openRechargeModal}
-            className="btn bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded-full transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1"
+            className="btn-play flex items-center gap-2 text-sm py-2 px-5 shadow-md"
           >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clipRule="evenodd" />
+              <path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z" />
+            </svg>
             {t('recharge_button')}
           </button>
         </div>

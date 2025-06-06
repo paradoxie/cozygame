@@ -1,4 +1,20 @@
+# CozyGame.fun Robots.txt
 User-agent: *
 Allow: /
 
+# 允许所有语言版本
+Allow: /en/
+Allow: /zh-CN/
+Allow: /es/
+Allow: /fr/
+Allow: /de/
+Allow: /ru/
+Allow: /ja/
+
+# 禁止爬取某些资源
+Disallow: /api/
+Disallow: /admin/
+Disallow: /assets/raw/
+
+# 站点地图
 Sitemap: https://cozygame.fun/sitemap.xml 

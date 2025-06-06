@@ -295,8 +295,8 @@ const AdvancedTagFilter = ({
         
         {/* 过滤逻辑切换 */}
         <div className="flex items-center justify-end flex-1">
-          <span className="text-sm font-medium text-neutral-darkest dark:text-white mr-3">{t('filter_logic')}:</span>
-          <div className="relative flex items-center min-w-[220px] h-10 bg-white dark:bg-neutral-darkest rounded-lg border border-neutral-light/50 dark:border-neutral-medium/30 shadow-sm overflow-hidden">
+          <span className="text-sm font-medium text-neutral-darkest dark:text-white mr-3 whitespace-nowrap">{t('filter_logic')}:</span>
+          <div className="relative flex items-center w-full max-w-[220px] h-10 bg-white dark:bg-neutral-darkest rounded-lg border border-neutral-light/50 dark:border-neutral-medium/30 shadow-sm overflow-hidden">
             <button
               onClick={toggleFilterLogic}
               className="relative w-full h-full flex items-center justify-between"
@@ -316,7 +316,7 @@ const AdvancedTagFilter = ({
               <div className={`z-10 flex-1 flex justify-center items-center py-2 ${
                 filterLogic === 'AND' ? 'font-semibold' : 'font-normal'
               }`}>
-                <span className={`py-1 px-3 text-sm ${
+                <span className={`py-1 px-1 text-xs sm:text-sm ${
                   filterLogic === 'AND' 
                     ? 'text-white' 
                     : 'text-neutral-darkest dark:text-white'
@@ -329,7 +329,7 @@ const AdvancedTagFilter = ({
               <div className={`z-10 flex-1 flex justify-center items-center py-2 ${
                 filterLogic === 'OR' ? 'font-semibold' : 'font-normal'
               }`}>
-                <span className={`py-1 px-3 text-sm ${
+                <span className={`py-1 px-1 text-xs sm:text-sm ${
                   filterLogic === 'OR' 
                     ? 'text-white' 
                     : 'text-neutral-darkest dark:text-white'
