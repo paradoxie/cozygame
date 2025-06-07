@@ -99,6 +99,12 @@
   "nav_vip_zone": "VIP Zone",
   "nav_about": "About Us",
   "view_all_vip_games": "View All VIP Games",
+  
+  "share_text": "Check out this awesome game site: {{siteName}}!",
+  "share_to_twitter": "Share to Twitter",
+  "share_to_facebook": "Share to Facebook",
+  "share_to_instagram": "Share to Instagram",
+  "share_to_discord": "Share to Discord",
 
   "about_us": "About Us",
   "about_page_title": "About Us | {{siteName}}",
@@ -302,5 +308,13 @@
   "cookie_updates_text": "We may update this Cookie Policy from time to time in order to reflect changes to the cookies we use or for other operational, legal, or regulatory reasons. Please therefore revisit this Cookie Policy regularly to stay informed about our use of cookies and related technologies.",
   "cookie_updates_text_2": "The date at the top of this Cookie Policy indicates when it was last updated.",
   "cookie_contact": "Contact Us",
-  "cookie_contact_text": "If you have any questions about our use of cookies or this Cookie Policy, please contact us at:"
+  "cookie_contact_text": "If you have any questions about our use of cookies or this Cookie Policy, please contact us at:",
+
+  "popular_tags": "Popular Tags",
+  "tag_puzzle": "Puzzle",
+  "tag_arcade": "Arcade",
+  "tag_strategy": "Strategy",
+  "tag_adventure": "Adventure",
+  "tag_action": "Action",
+  "tag_casual": "Casual"
 }

@@ -235,6 +235,21 @@
     }
   }
   
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out forwards;
+  }
+  
   /* 发光边框 */
   .glow-border {
     @apply relative;
@@ -309,6 +324,31 @@
   .text-gradient-fresh {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(to right, #10B981, #3B82F6);
+  }
+  
+  /* 游戏风格社交媒体按钮 */
+  .game-social-btn {
+    @apply relative flex items-center justify-center w-10 h-10 rounded-full overflow-hidden transition-all duration-300 text-neutral-medium dark:text-neutral-light hover:text-white dark:hover:text-white;
+  }
+  
+  .game-social-btn-bg {
+    @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100 rounded-full;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
+  }
+  
+  .game-social-btn::after {
+    @apply absolute inset-0 bg-white dark:bg-neutral-darkest rounded-full scale-100 group-hover:scale-0 transition-all duration-300 -z-10;
+    content: '';
+    box-shadow: inset 0 0 0 1px rgba(156, 163, 175, 0.5);
+  }
+  
+  .game-social-btn:hover {
+    @apply transform -translate-y-1 shadow-lg;
+    box-shadow: 0 5px 15px -3px rgba(99, 102, 241, 0.4);
+  }
+  
+  .game-social-btn:active {
+    @apply transform translate-y-0 scale-95;
   }
 }
 

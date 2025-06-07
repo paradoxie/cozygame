@@ -150,7 +150,7 @@ const GameCard = ({ game, showTitle = true }) => {
           
           {/* 卡片底部操作按钮 */}
           <div className="mt-auto pt-3 flex justify-between items-center">
-            <Link
+            <Link 
               to={`/${currentLang}/game/${game.id}`}
               className="btn-play flex items-center justify-center gap-1 text-xs py-1.5 px-3 shadow-sm"
               aria-label={`${t('play_button')} ${title}`}

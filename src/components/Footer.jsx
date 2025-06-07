@@ -1,13 +1,55 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router-dom';
-import LanguageSwitcher from './LanguageSwitcher';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import GamepadIcon from '../assets/icons/gamepad.svg';
 
 const Footer = () => {
   const { t } = useTranslation();
   const { lang } = useParams();
+  const location = useLocation();
   const currentYear = 2025;
+  
+  // 获取当前网站URL
+  const siteUrl = window.location.origin;
+  const currentUrl = `${siteUrl}${location.pathname}`;
+  
+  // 分享到社交媒体的函数
+  const shareToSocial = (platform) => {
+    const siteName = t('site_name');
+    const shareText = t('share_text', { siteName });
+    let shareUrl = '';
+    
+    switch(platform) {
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(shareText)}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
+        break;
+      case 'instagram':
+        // Instagram不支持直接分享链接，打开Instagram
+        shareUrl = 'https://www.instagram.com/';
+        break;
+      case 'discord':
+        // Discord不支持直接分享链接，打开Discord
+        shareUrl = 'https://discord.com/';
+        break;
+      default:
+        return;
+    }
+    
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  // 热门标签列表
+  const popularTags = [
+    { id: 'puzzle', name: t('tag_puzzle') },
+    { id: 'arcade', name: t('tag_arcade') },
+    { id: 'strategy', name: t('tag_strategy') },
+    { id: 'adventure', name: t('tag_adventure') },
+    { id: 'action', name: t('tag_action') },
+    { id: 'casual', name: t('tag_casual') }
+  ];
 
   return (
     <footer className="relative bg-neutral-lightest dark:bg-neutral-dark pt-16 pb-8 border-t border-neutral-light/30 dark:border-neutral-medium/30 overflow-hidden">
@@ -59,28 +101,67 @@ const Footer = () => {
               {t('footer_about_site_text')}
             </p>
             
+            {/* 游戏风格社交媒体按钮 */}
             <div className="flex space-x-3">
-              <a href="#" aria-label="Twitter" className="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-neutral-darkest shadow-md text-neutral-medium hover:text-primary-blue dark:text-neutral-light dark:hover:text-primary-blue transition-colors hover:shadow-lg hover:-translate-y-1 active:translate-y-0 cozy-shadow">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" />
+              {/* Twitter分享按钮 */}
+              <button 
+                onClick={() => shareToSocial('twitter')} 
+                aria-label={t('share_to_twitter')}
+                className="game-social-btn group"
+              >
+                <div className="game-social-btn-bg"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" />
                 </svg>
-              </a>
-              <a href="#" aria-label="Facebook" className="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-neutral-darkest shadow-md text-neutral-medium hover:text-primary-blue dark:text-neutral-light dark:hover:text-primary-blue transition-colors hover:shadow-lg hover:-translate-y-1 active:translate-y-0 cozy-shadow">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
+              </button>
+              
+              {/* Facebook分享按钮 */}
+              <button 
+                onClick={() => shareToSocial('facebook')} 
+                aria-label={t('share_to_facebook')}
+                className="game-social-btn group"
+              >
+                <div className="game-social-btn-bg"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
                 </svg>
-              </a>
-              <a href="#" aria-label="Instagram" className="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-neutral-darkest shadow-md text-neutral-medium hover:text-primary-blue dark:text-neutral-light dark:hover:text-primary-blue transition-colors hover:shadow-lg hover:-translate-y-1 active:translate-y-0 cozy-shadow">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21.54 15.42a6.1 6.1 0 01-.34 1.15 7.41 7.41 0 01-4.35 4.35 9.42 9.42 0 01-3.35.63c-1.25.05-1.65.06-4.85.06s-3.6-.01-4.85-.06a9.42 9.42 0 01-3.35-.63 7.41 7.41 0 01-4.35-4.35 6.1 6.1 0 01-.34-1.15c-.05-.25-.06-.52-.06-.78V8.58c0-.26.01-.53.06-.78a6.1 6.1 0 01.34-1.15 7.41 7.41 0 014.35-4.35 9.42 9.42 0 013.35-.63c1.25-.05 1.65-.06 4.85-.06s3.6.01 4.85.06a9.42 9.42 0 013.35.63 7.41 7.41 0 014.35 4.35 6.1 6.1 0 01.34 1.15c.05.25.06.52.06.78v6.06c0 .26-.01.53-.06.78z" />
+              </button>
+              
+              {/* Instagram分享按钮 */}
+              <button 
+                onClick={() => shareToSocial('instagram')} 
+                aria-label={t('share_to_instagram')}
+                className="game-social-btn group"
+              >
+                <div className="game-social-btn-bg"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
                 </svg>
-              </a>
-              <a href="#" aria-label="Discord" className="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-neutral-darkest shadow-md text-neutral-medium hover:text-primary-blue dark:text-neutral-light dark:hover:text-primary-blue transition-colors hover:shadow-lg hover:-translate-y-1 active:translate-y-0 cozy-shadow">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+              </button>
+              
+              {/* Discord分享按钮 */}
+              <button 
+                onClick={() => shareToSocial('discord')} 
+                aria-label={t('share_to_discord')}
+                className="game-social-btn group"
+              >
+                <div className="game-social-btn-bg"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.39-.444.885-.608 1.283a18.566 18.566 0 0 0-5.487 0 12.36 12.36 0 0 0-.617-1.283.077.077 0 0 0-.079-.036c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026c.462-.62.874-1.275 1.226-1.963.021-.04.001-.088-.041-.104a13.201 13.201 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.344-1.22.635-1.873.877a.075.075 0 0 0-.041.105c.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.963 19.963 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028zM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38zm7.975 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38z" />
                 </svg>
-              </a>
+              </button>
+              
+              {/* 新增游戏风格YouTube按钮 */}
+              <button 
+                onClick={() => window.open('https://www.youtube.com/', '_blank', 'noopener,noreferrer')} 
+                aria-label="YouTube"
+                className="game-social-btn group"
+              >
+                <div className="game-social-btn-bg"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+              </button>
             </div>
           </div>
           
@@ -176,31 +257,44 @@ const Footer = () => {
             </ul>
           </div>
           
-          {/* 第四列：语言选择器与订阅 - 增强版 */}
+          {/* 第四列：热门标签和订阅 - 替换语言切换器 */}
           <div>
-            <h3 className="text-base font-semibold mb-5 relative inline-block text-neutral-darkest dark:text-white">
-              <span className="text-gradient-cozy">{t('footer_language')}</span>
-              <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-accent-yellow via-pink-500 to-primary-blue rounded-full"></span>
-            </h3>
-            <div className="p-2 bg-white/30 dark:bg-neutral-darkest/30 backdrop-blur-sm rounded-lg shadow-sm border border-neutral-light/10 dark:border-neutral-medium/10">
-              <LanguageSwitcher />
-            </div>
-            
-            {/* 订阅表单 - 增强版 */}
-            <div className="mt-6">
-              <h3 className="text-base font-semibold mb-3 text-neutral-darkest dark:text-white">
-                <span className="text-gradient-warm">{t('subscribe_to_updates')}</span>
-              </h3>
-              <div className="p-2 bg-white/30 dark:bg-neutral-darkest/30 backdrop-blur-sm rounded-lg shadow-sm border border-neutral-light/10 dark:border-neutral-medium/10">
-                <div className="input-group">
-                  <input 
-                    type="email" 
-                    placeholder={t('your_email')} 
-                    className="w-full bg-white dark:bg-neutral-darkest border border-neutral-light/50 dark:border-neutral-medium/30 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-primary-blue/50 focus:ring-2 focus:ring-primary-blue/30"
-                  />
-                  <button className="btn-subscribe text-sm py-1.5 px-4">
-                    {t('subscribe')}
-                  </button>
+            <div className="flex flex-col space-y-6">
+              {/* 订阅表单 */}
+              <div>
+                <h3 className="text-base font-semibold mb-3 text-neutral-darkest dark:text-white">
+                  <span className="text-gradient-warm">{t('subscribe_to_updates')}</span>
+                </h3>
+                <div className="p-2 bg-white/30 dark:bg-neutral-darkest/30 backdrop-blur-sm rounded-lg shadow-sm border border-neutral-light/10 dark:border-neutral-medium/10">
+                  <div className="input-group">
+                    <input 
+                      type="email" 
+                      placeholder={t('your_email')} 
+                      className="w-full bg-white dark:bg-neutral-darkest border border-neutral-light/50 dark:border-neutral-medium/30 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-primary-blue/50 focus:ring-2 focus:ring-primary-blue/30"
+                    />
+                    <button className="btn-subscribe text-sm py-1.5 px-4">
+                      {t('subscribe')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* 热门标签 - 替换语言切换器 */}
+              <div>
+                <h3 className="text-base font-semibold mb-3 relative inline-block text-neutral-darkest dark:text-white">
+                  <span className="text-gradient-cozy">{t('popular_tags')}</span>
+                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-accent-yellow via-pink-500 to-primary-blue rounded-full"></span>
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {popularTags.map(tag => (
+                    <Link 
+                      key={tag.id}
+                      to={`/${lang}?tags=${tag.id}`}
+                      className="inline-block px-3 py-1 text-xs rounded-full bg-white/40 dark:bg-neutral-darkest/40 backdrop-blur-sm border border-neutral-light/20 dark:border-neutral-medium/20 text-neutral-medium dark:text-neutral-light hover:bg-gradient-to-r hover:from-purple-500/20 hover:to-pink-500/20 hover:text-primary-blue dark:hover:text-primary-blue-light hover:border-purple-500/30 transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0"
+                    >
+                      {tag.name}
+                    </Link>
+                  ))}
                 </div>
               </div>
             </div>

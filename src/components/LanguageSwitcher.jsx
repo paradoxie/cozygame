@@ -17,7 +17,7 @@ const languageFlags = {
   'pt-BR': '🇧🇷',   // 巴西
 };
 
-const LanguageSwitcher = () => {
+const LanguageSwitcher = ({ dropDirection = 'down' }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -114,6 +114,15 @@ const LanguageSwitcher = () => {
   const currentLanguageDisplayName = getLanguageDisplayName(currentLang);
   const currentLanguageFlag = getLanguageFlag(currentLang);
 
+  // 根据dropDirection设置下拉菜单的位置和动画起点
+  const dropdownPositionClass = dropDirection === 'up' 
+    ? 'bottom-full mb-2' 
+    : 'top-full mt-2';
+  
+  const dropdownOriginClass = dropDirection === 'up'
+    ? 'origin-bottom'
+    : 'origin-top';
+
   return (
     <div className="language-switcher relative" ref={dropdownRef}>
       <button
@@ -136,7 +145,7 @@ const LanguageSwitcher = () => {
       </button>
       
       {isOpen && (
-        <div className="absolute z-40 mt-2 w-48 bg-white/95 dark:bg-neutral-dark/95 backdrop-blur-md rounded-xl shadow-lg overflow-hidden border border-neutral-light/50 dark:border-neutral-medium/30 transform transition-all duration-300 origin-top animate-scale-in">
+        <div className={`absolute z-50 w-48 bg-white/95 dark:bg-neutral-dark/95 backdrop-blur-md rounded-xl shadow-lg overflow-hidden border border-neutral-light/50 dark:border-neutral-medium/30 transform transition-all duration-300 ${dropdownPositionClass} ${dropdownOriginClass} animate-scale-in ${dropDirection === 'up' ? 'right-0' : 'left-0'}`}>
           <div className="py-1">
             {currentSupportedLngs.map((lng, index) => {
               const displayText = getLanguageDisplayName(lng);

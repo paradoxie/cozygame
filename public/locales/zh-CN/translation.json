@@ -46,7 +46,7 @@
   "vip_zone_description": "探索CozyGame.fun的VIP专区，体验精选的治愈系游戏，所有人都可免费畅玩！",
   "confirm_button": "确定",
   "see_more": "查看更多",
-  
+
   "filter_by_tags": "按标签筛选",
   "clear_all": "清除全部",
   "expand_tags": "展开标签",
@@ -99,6 +99,12 @@
   "nav_vip_zone": "VIP专区",
   "nav_about": "关于我们",
   "view_all_vip_games": "查看所有VIP游戏",
+
+  "share_text": "来看看这个超棒的游戏网站：{{siteName}}！",
+  "share_to_twitter": "分享到Twitter",
+  "share_to_facebook": "分享到Facebook",
+  "share_to_instagram": "分享到Instagram",
+  "share_to_discord": "分享到Discord",
 
   "about_us": "关于我们",
   "about_page_title": "关于我们 | {{siteName}}",
@@ -317,5 +323,13 @@
   
   "disclaimer_icon_alt": "免责声明图标",
   "last_updated": "最后更新：{{date}}",
-  "disclaimer_game_content_note": "注意：我们致力于提供安全和愉快的游戏体验。如果您发现任何您认为不适当的内容，请立即联系我们。"
+  "disclaimer_game_content_note": "注意：我们致力于提供安全和愉快的游戏体验。如果您发现任何您认为不适当的内容，请立即联系我们。",
+
+  "popular_tags": "热门标签",
+  "tag_puzzle": "益智",
+  "tag_arcade": "街机",
+  "tag_strategy": "策略",
+  "tag_adventure": "冒险",
+  "tag_action": "动作",
+  "tag_casual": "休闲"
 }
