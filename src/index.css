@@ -234,6 +234,21 @@
       transform: translateY(0);
     }
   }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s ease-out forwards;
+  }
   
   @keyframes scaleIn {
     from {
@@ -408,5 +423,66 @@
   /* 柔和的悬停过渡 */
   .hover-transition {
     @apply transition-all duration-300 ease-out;
+  }
+
+  /* 全屏相关样式 */
+  .fullscreen-btn {
+    @apply shadow-lg;
+  }
+
+  .fullscreen-btn:hover {
+    @apply shadow-xl;
+  }
+
+  /* 全屏状态下的样式优化 */
+  :-webkit-full-screen {
+    background-color: #000;
+  }
+
+  :-moz-full-screen {
+    background-color: #000;
+  }
+
+  :-ms-fullscreen {
+    background-color: #000;
+  }
+
+  :fullscreen {
+    background-color: #000;
+  }
+
+  /* 移动端横屏全屏样式 */
+  @media screen and (orientation: landscape) and (max-height: 640px) {
+    .game-container-fullscreen {
+      height: 100vh;
+      width: 100vw;
+    }
+  }
+
+  /* 移动端暗黑模式字体颜色优化 */
+  @media (max-width: 768px) {
+    .dark .mobile-text-primary {
+      @apply text-white;
+    }
+    
+    .dark .mobile-text-secondary {
+      @apply text-neutral-light;
+    }
+    
+    .dark .mobile-text-muted {
+      @apply text-neutral-medium;
+    }
+
+    .dark .mobile-bg-primary {
+      @apply bg-neutral-dark;
+    }
+
+    .dark .mobile-bg-secondary {
+      @apply bg-neutral-medium;
+    }
+
+    .dark .mobile-border {
+      @apply border-neutral-medium;
+    }
   }
 } 

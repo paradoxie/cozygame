@@ -1,11 +1,21 @@
 # 启用 URL 重写引擎
 RewriteEngine On
 
+# ==================================================================
+# SEO优化: 为搜索引擎爬虫优先提供静态HTML文件
+# ==================================================================
+
+# 检测搜索引擎爬虫并提供静态HTML版本
+RewriteCond %{HTTP_USER_AGENT} (bot|crawler|spider|slurp|bingbot|googlebot|facebookexternalhit|twitterbot|linkedinbot) [NC]
+RewriteCond %{REQUEST_URI} ^/([a-z]{2}|[a-z]{2}-[A-Z]{2})/game/([a-zA-Z0-9-]+)/?$
+RewriteCond %{DOCUMENT_ROOT}/%1/game/%2.html -f
+RewriteRule ^([a-z]{2}|[a-z]{2}-[A-Z]{2})/game/([a-zA-Z0-9-]+)/?$ /$1/game/$2.html [L]
+
 # 如果请求的是现有文件或目录，直接访问
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# 将所有其他请求重定向到 index.html
+# 将所有其他请求重定向到 index.html (SPA模式)
 RewriteRule ^ index.html [QSA,L]
 
 # 设置缓存控制

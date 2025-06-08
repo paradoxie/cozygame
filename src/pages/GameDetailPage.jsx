@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useGameData } from '../hooks/useGameData';
 import { useUserPreferences } from '../hooks/useUserPreferences';
+import { currentSupportedLngs, defaultLng } from '../i18n-config';
 import GamePlayer from '../components/GamePlayer';
 import FavoriteButton from '../components/FavoriteButton';
 import ShareButton from '../components/ShareButton';
@@ -68,18 +69,85 @@ const GameDetailPage = () => {
     "name": title,
     "description": description,
     "inLanguage": currentLang,
+    "image": game.thumbnailUrl,
     "keywords": tags ? tags.join(", ") : "",
     "gamePlatform": "Web Browser",
     "applicationCategory": "Game",
-    "genre": tags ? tags[0] : "",
-    "url": window.location.href
+    "genre": tags ? tags.slice(0, 3).join(", ") : "",
+    "url": typeof window !== 'undefined' ? window.location.href : `https://cozygame.fun/${currentLang}/game/${gameId}`,
+    "isPartOf": {
+      "@type": "WebSite",
+      "@id": "https://cozygame.fun/#website"
+    },
+    "potentialAction": {
+      "@type": "PlayAction",
+      "target": typeof window !== 'undefined' ? window.location.href : `https://cozygame.fun/${currentLang}/game/${gameId}`
+    }
   };
+
+  if (game.vip) {
+    structuredData.additionalProperty = {
+      "@type": "PropertyValue",
+      "name": "VIP",
+      "value": "true"
+    };
+  }
+
+  // 构建 hreflang 链接
+  const hreflangLinks = currentSupportedLngs.map(lang => ({
+    rel: 'alternate',
+    hrefLang: lang,
+    href: `https://cozygame.fun/${lang}/game/${gameId}`
+  }));
+  
+  // 添加默认语言链接
+  hreflangLinks.push({
+    rel: 'alternate',
+    hrefLang: 'x-default',
+    href: `https://cozygame.fun/${defaultLng}/game/${gameId}`
+  });
+
+  const metaDescription = description && description.length > 160 
+    ? description.substring(0, 157) + '...' 
+    : description || '';
   
   return (
     <>
       <Helmet>
+        {/* 基础SEO元数据 */}
         <title>{t('game_detail_page_title', { gameTitle: title, siteName: t('site_name') })}</title>
-        <meta name="description" content={description.substring(0, 160)} />
+        <meta name="description" content={metaDescription} />
+        <meta name="keywords" content={tags ? tags.join(', ') : ''} />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={`https://cozygame.fun/${currentLang}/game/${gameId}`} />
+        
+        {/* Open Graph 元数据 */}
+        <meta property="og:title" content={`${title} - ${t('site_name')}`} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content={game.thumbnailUrl} />
+        <meta property="og:url" content={`https://cozygame.fun/${currentLang}/game/${gameId}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content={t('site_name')} />
+        <meta property="og:locale" content={currentLang} />
+        
+        {/* Twitter Card 元数据 */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${title} - ${t('site_name')}`} />
+        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:image" content={game.thumbnailUrl} />
+        
+        {/* Hreflang 链接 */}
+        {hreflangLinks.map((link, index) => (
+          <link
+            key={index}
+            rel={link.rel}
+            hrefLang={link.hrefLang}
+            href={link.href}
+          />
+        ))}
+        
+        {/* 预加载关键资源 */}
+        <link rel="preload" href={game.thumbnailUrl} as="image" />
         
         {/* JSON-LD 结构化数据 */}
         <script type="application/ld+json">

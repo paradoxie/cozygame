@@ -331,5 +331,13 @@
   "tag_strategy": "策略",
   "tag_adventure": "冒险",
   "tag_action": "动作",
-  "tag_casual": "休闲"
+  "tag_casual": "休闲",
+  
+  "enter_fullscreen": "进入全屏",
+  "exit_fullscreen": "退出全屏",
+  "mobile_fullscreen_hint": "横屏全屏",
+  "add_to_home_screen": "添加到主屏",
+  "refresh": "刷新",
+  "retry_game": "重试游戏",
+  "game_url_missing": "游戏链接缺失"
 }

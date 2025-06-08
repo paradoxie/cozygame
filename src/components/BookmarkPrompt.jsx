@@ -29,26 +29,48 @@ const BookmarkPrompt = () => {
   if (!showPrompt) return null;
   
   return (
-    <div className="fixed bottom-4 right-4 max-w-xs bg-gradient-to-br from-purple-600/90 to-indigo-600/90 backdrop-blur-md text-white rounded-xl shadow-lg p-4 z-40 animate-slide-up border border-white/20">
+    <div className={`fixed ${isMobile ? 'bottom-4 left-4 right-4' : 'bottom-4 right-4 max-w-xs'} bg-gradient-to-br from-purple-600/90 to-indigo-600/90 backdrop-blur-md text-white rounded-xl shadow-lg ${isMobile ? 'p-3' : 'p-4'} z-40 animate-slide-up border border-white/20`}>
       {/* 装饰性元素 */}
       <div className="absolute -right-4 -top-4 w-16 h-16 bg-accent-yellow/20 rounded-full blur-xl"></div>
       <div className="absolute -left-4 -bottom-4 w-16 h-16 bg-primary-blue/20 rounded-full blur-xl"></div>
       
-      <div className="relative z-10 flex items-start">
-        <div className="flex-shrink-0 text-white mr-3 bg-white/20 p-2 rounded-full">
-          <img src={BookmarkIcon} className="w-5 h-5" alt="Bookmark" />
+      <div className={`relative z-10 ${isMobile ? 'flex flex-col space-y-2' : 'flex items-start'}`}>
+        <div className={`flex items-center ${isMobile ? 'mb-2' : 'flex-shrink-0 mr-3'}`}>
+          <div className="text-white bg-white/20 p-2 rounded-full mr-2">
+            <img src={BookmarkIcon} className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} alt="Bookmark" />
+          </div>
+          <h3 className={`font-semibold text-white/90 ${isMobile ? 'text-sm' : ''}`}>{t('bookmark_prompt_title')}</h3>
         </div>
-        <div>
-          <h3 className="font-semibold mb-1 text-white/90">{t('bookmark_prompt_title')}</h3>
-          <p className="text-sm text-white/80 mb-3">
+        
+        <div className={isMobile ? '' : 'flex-1'}>
+          <p className={`text-white/80 mb-3 ${isMobile ? 'text-xs' : 'text-sm'}`}>
             {isMobile ? t('bookmark_prompt_text_mobile') : t('bookmark_prompt_text_desktop')}
           </p>
-          <button 
-            onClick={dismissPrompt}
-            className="bg-white/20 hover:bg-white/30 text-white text-sm py-1.5 px-4 rounded-full transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95"
-          >
-            {t('bookmark_prompt_dismiss')}
-          </button>
+          
+          <div className={`${isMobile ? 'flex space-x-2' : ''}`}>
+            <button 
+              onClick={dismissPrompt}
+              className={`bg-white/20 hover:bg-white/30 text-white transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 rounded-full ${isMobile ? 'text-xs py-1.5 px-3 flex-1' : 'text-sm py-1.5 px-4'}`}
+            >
+              {t('bookmark_prompt_dismiss')}
+            </button>
+            
+            {isMobile && (
+              <button 
+                onClick={() => {
+                  // 在移动端提供PWA安装提示
+                  if ('serviceWorker' in navigator) {
+                    // 触发PWA安装横幅
+                    window.dispatchEvent(new Event('beforeinstallprompt'));
+                  }
+                  dismissPrompt();
+                }}
+                className="bg-primary-blue/80 hover:bg-primary-blue text-white text-xs py-1.5 px-3 rounded-full transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex-1"
+              >
+                {t('add_to_home_screen', { defaultValue: '添加到主屏' })}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

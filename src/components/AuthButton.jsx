@@ -70,30 +70,30 @@ const AuthButton = ({ isMobile = false }) => {
     return (
       <div className="w-full">
         {user ? (
-          <div className="space-y-3">
-            <div className="flex items-center mb-2">
-              <img src={user.photoURL} alt={user.displayName} className="w-8 h-8 rounded-full mr-2" />
-              <span className="font-medium">{user.displayName}</span>
+          <div className="space-y-1">
+            <div className="flex items-center mb-1.5">
+              <img src={user.photoURL} alt={user.displayName} className="w-4 h-4 rounded-full mr-1.5" />
+              <span className="font-medium text-xs text-neutral-darkest dark:text-white truncate">{user.displayName}</span>
             </div>
             
-            {/* VIP区域按钮 */}
+            {/* VIP区域按钮 - 移动端优化 */}
             <button 
               onClick={navigateToVipZone}
-              className="w-full btn btn-primary flex items-center justify-center mb-3"
+              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs py-1 px-2 rounded-md flex items-center justify-center transition-all duration-200 active:scale-95"
             >
-              <img src={CrownIcon} alt="" className="w-5 h-5 mr-2" aria-hidden="true" />
+              <img src={CrownIcon} alt="" className="w-2.5 h-2.5 mr-1" aria-hidden="true" />
               {t('vip_zone_button')}
             </button>
             
             {recentGames.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium mb-1">{t('recently_played_title')}</h3>
-                <ul className="bg-neutral-lightest dark:bg-neutral-dark rounded-md p-2">
-                  {recentGames.slice(0, 3).map(game => (
-                    <li key={game.id} className="py-1">
+                <h3 className="text-xs font-medium mb-0.5 text-neutral-medium dark:text-neutral-light">{t('recently_played_title')}</h3>
+                <ul className="bg-neutral-lightest dark:bg-neutral-medium rounded-md p-1 space-y-0.5">
+                  {recentGames.slice(0, 2).map(game => (
+                    <li key={game.id}>
                       <Link 
                         to={`/${lang}/game/${game.id}`}
-                        className="block text-sm hover:text-purple-600 transition-colors truncate"
+                        className="block text-xs hover:text-primary-blue dark:hover:text-primary-blue-light transition-colors truncate text-neutral-darkest dark:text-white py-0.5"
                       >
                         {renderGameTitle(game)}
                       </Link>
@@ -105,13 +105,13 @@ const AuthButton = ({ isMobile = false }) => {
             
             {favoriteGames.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium mb-1">{t('favorites_title')}</h3>
-                <ul className="bg-neutral-lightest dark:bg-neutral-dark rounded-md p-2">
-                  {favoriteGames.slice(0, 3).map(game => (
-                    <li key={game.id} className="py-1">
+                <h3 className="text-xs font-medium mb-0.5 text-neutral-medium dark:text-neutral-light">{t('favorites_title')}</h3>
+                <ul className="bg-neutral-lightest dark:bg-neutral-medium rounded-md p-1 space-y-0.5">
+                  {favoriteGames.slice(0, 2).map(game => (
+                    <li key={game.id}>
                       <Link 
                         to={`/${lang}/game/${game.id}`}
-                        className="block text-sm hover:text-purple-600 transition-colors truncate"
+                        className="block text-xs hover:text-primary-blue dark:hover:text-primary-blue-light transition-colors truncate text-neutral-darkest dark:text-white py-0.5"
                       >
                         {renderGameTitle(game)}
                       </Link>
@@ -123,7 +123,7 @@ const AuthButton = ({ isMobile = false }) => {
             
             <button
               onClick={handleLogout}
-              className="w-full btn btn-secondary"
+              className="w-full bg-neutral-lightest dark:bg-neutral-medium text-neutral-darkest dark:text-white text-xs py-1 px-2 rounded-md transition-all duration-200 active:scale-95 border border-neutral-light dark:border-neutral-dark"
             >
               {t('logout_button')}
             </button>
@@ -132,16 +132,16 @@ const AuthButton = ({ isMobile = false }) => {
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full btn btn-primary flex items-center justify-center"
+            className="bg-gradient-to-r from-primary-blue to-primary-blue-dark text-white text-xs py-1.5 px-2.5 rounded-md flex items-center justify-center transition-all duration-200 active:scale-95 disabled:opacity-50 w-auto min-w-0"
           >
             {loading ? (
-              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             ) : (
               <>
-                <img src={GoogleIcon} alt="Google" className="w-5 h-5 mr-2" />
+                <img src={GoogleIcon} alt="Google" className="w-3 h-3 mr-1" />
                 {t('login_button')}
               </>
             )}
@@ -275,16 +275,16 @@ const AuthButton = ({ isMobile = false }) => {
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-300"
+          className="flex items-center space-x-2 px-3 py-2 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-300 text-sm"
         >
           {loading ? (
-            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin -ml-1 mr-1.5 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
           ) : (
             <>
-              <img src={GoogleIcon} alt="Google" className="w-5 h-5" />
+              <img src={GoogleIcon} alt="Google" className="w-4 h-4" />
               <span>{t('login_button')}</span>
             </>
           )}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe 测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        iframe { width: 100%; height: 600px; border: 1px solid #ccc; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .loading { background: #fff3cd; color: #856404; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>游戏Iframe加载测试</h1>
+    
+    <div id="status" class="status loading">正在加载游戏...</div>
+    
+    <iframe 
+        id="game-frame"
+        src="https://cloud.onlinegames.io/games/2021/1/apocalypse-truck/index-og.html"
+        allow="fullscreen; gamepad; microphone; camera"
+        allowfullscreen>
+    </iframe>
+    
+    <script>
+        const iframe = document.getElementById('game-frame');
+        const status = document.getElementById('status');
+        
+        iframe.onload = function() {
+            status.textContent = '游戏加载成功！';
+            status.className = 'status success';
+            console.log('游戏iframe加载完成');
+        };
+        
+        iframe.onerror = function() {
+            status.textContent = '游戏加载失败';
+            status.className = 'status error';
+            console.error('游戏iframe加载失败');
+        };
+        
+        // 30秒超时
+        setTimeout(() => {
+            if (status.textContent === '正在加载游戏...') {
+                status.textContent = '游戏加载超时';
+                status.className = 'status error';
+                console.warn('游戏加载超时');
+            }
+        }, 30000);
+    </script>
+</body>
+</html> 

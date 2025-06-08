@@ -153,10 +153,10 @@ const Navbar = () => {
       
       {/* 移动端菜单 - 带动画效果 */}
       <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="px-4 py-3 space-y-3 bg-white/90 dark:bg-neutral-dark/90 backdrop-blur-sm border-t border-neutral-light/20 dark:border-neutral-medium/20">
+        <div className="px-4 py-2 space-y-2 bg-white/90 dark:bg-neutral-dark/90 backdrop-blur-sm border-t border-neutral-light/20 dark:border-neutral-medium/20">
           <SearchInput isMobile />
           
-          <nav className="space-y-2 py-2">
+          <nav className="space-y-1 py-1">
             <Link 
               to={`/${i18n.language}`}
               className={`block px-3 py-2 rounded-lg ${
@@ -206,8 +206,10 @@ const Navbar = () => {
             </Link>
           </nav>
           
-          <div className="flex items-center justify-between py-2">
-            <LanguageSwitcher />
+          <div className="pt-1 border-t border-neutral-light/30 dark:border-neutral-medium/30 space-y-2">
+            <div className="flex items-center justify-center">
+              <LanguageSwitcher />
+            </div>
             <AuthButton isMobile />
           </div>
         </div>
