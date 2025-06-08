@@ -12,7 +12,8 @@
     "generate-sitemap": "node scripts/generate-sitemap.cjs",
     "generate-htaccess": "node scripts/generate-htaccess.js",
     "generate-static-pages": "node scripts/generate-static-game-pages.cjs",
-    "validate-seo": "node scripts/validate-seo.cjs"
+    "validate-seo": "node scripts/validate-seo.cjs",
+    "verify-online-seo": "node scripts/verify-online-seo.cjs"
   },
   "dependencies": {
     "firebase": "^10.7.1",
